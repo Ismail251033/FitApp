@@ -6,13 +6,11 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { initDb, all } = require('./server/database/db');
+const { initDb } = require('./server/database/db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -31,7 +29,7 @@ app.use('/api/places',     require('./server/routes/places'));
 app.use('/api/progress',   require('./server/routes/progress'));
 
 // SPA fallback - send index.html for all non-API routes
-app.get('/{*splat}', (req, res) => {
+app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   }
@@ -52,10 +50,3 @@ initDb().then(() => {
   console.error('Failed to start server:', err);
   process.exit(1);
 });
-
-(async () => {
-  await initDb();
-
-  const users = all("SELECT * FROM users");
-  console.log("USERS:", users);
-})();
