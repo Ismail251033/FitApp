@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FitApp">
+  <meta name="description" content="Your fitness social community. Track workouts, share progress, find partners.">
+
+  <title>FitApp — Fitness Social</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════ -->
+<!--  AUTH PAGES (shown when logged out)  -->
+<!-- ════════════════════════════════════ -->
+
+<div id="auth-wrapper">
+
+  <!-- Login Page -->
+  <div id="login-page" class="auth-page">
+    <div class="auth-logo">FitApp</div>
+    <p class="auth-tagline">Train. Share. Grow. 💪</p>
+
+    <div class="auth-card">
+      <h2 class="auth-title">Welcome Back</h2>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input id="login-email" type="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="login-password" type="password" class="form-input" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="authLogin()">Sign In</button>
+
+      <p class="auth-switch">
+        No account? <a href="#" onclick="showRegister()">Create one</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Register Page -->
+  <div id="register-page" class="auth-page hidden">
+    <div class="auth-logo">FitApp</div>
+    <p class="auth-tagline">Start your fitness journey today</p>
+
+    <div class="auth-card">
+      <h2 class="auth-title">Create Account</h2>
+
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input id="reg-username" type="text" class="form-input" placeholder="fitwarrior" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input id="reg-email" type="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="reg-password" type="password" class="form-input" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fitness Goal</label>
+        <select id="reg-goal" class="form-input">
+          <option value="lose_weight">🔥 Lose Weight</option>
+          <option value="gain_muscle">💪 Gain Muscle</option>
+          <option value="maintain" selected>⚖️ Maintain</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="authRegister()">Get Started</button>
+
+      <p class="auth-switch">
+        Have an account? <a href="#" onclick="showLogin()">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!--  MAIN APP (shown when logged in)     -->
+<!-- ════════════════════════════════════ -->
+
+<div id="app-wrapper" class="hidden">
+
+  <div class="app-container">
+
+    <!-- ── DASHBOARD PAGE ── -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div>
+          <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Good morning,</div>
+          <h1 id="dash-username" style="font-size:28px;"></h1>
+        </div>
+        <div id="dash-avatar-wrap"></div>
+      </div>
+
+      <!-- XP Bar -->
+      <div class="xp-bar-wrap mb-12">
+        <div class="xp-header">
+          <span class="level-badge" id="dash-level">LVL 1</span>
+          <span class="text-small text-muted mono" id="dash-xp">0 XP</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="dash-xp-bar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid mb-16">
+        <div class="stat-card accent">
+          <div class="stat-icon">👟</div>
+          <div class="stat-value" id="dash-steps">0</div>
+          <div class="stat-label">Steps Today</div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="dash-steps-bar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-value danger" id="dash-calories">0</div>
+          <div class="stat-label">Calories Burned</div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="dash-cal-bar" style="width:0%;background:linear-gradient(90deg,#ff6b6b,#ff9f43)"></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-value blue" id="dash-streak">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏱</div>
+          <div class="stat-value gold" id="dash-duration">0</div>
+          <div class="stat-label">Minutes Active</div>
+        </div>
+      </div>
+
+      <!-- Weekly Chart -->
+      <div class="card mb-16">
+        <div class="section-header">
+          <div class="section-title">Weekly Steps</div>
+        </div>
+        <div class="mini-chart" id="weekly-chart"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span id="chart-days" class="text-small text-muted"></span>
+        </div>
+      </div>
+
+      <!-- Quick Log -->
+      <div class="section-header">
+        <div class="section-title">Quick Log</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;">
+        <button class="btn btn-secondary flex-col items-center" style="padding:12px 8px;font-size:11px;gap:6px;" onclick="quickLog('running')">🏃 Run</button>
+        <button class="btn btn-secondary flex-col items-center" style="padding:12px 8px;font-size:11px;gap:6px;" onclick="quickLog('gym')">🏋️ Gym</button>
+        <button class="btn btn-secondary flex-col items-center" style="padding:12px 8px;font-size:11px;gap:6px;" onclick="quickLog('cycling')">🚴 Cycle</button>
+        <button class="btn btn-secondary flex-col items-center" style="padding:12px 8px;font-size:11px;gap:6px;" onclick="quickLog('walking')">🚶 Walk</button>
+      </div>
+
+      <!-- Badges -->
+      <div class="section-header">
+        <div class="section-title">Badges</div>
+      </div>
+      <div class="card">
+        <div class="badges-row" id="dash-badges">
+          <span class="text-small text-muted">Complete workouts to earn badges!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FEED PAGE ── -->
+    <div id="page-feed" class="page">
+      <div class="page-header">
+        <h1>Feed</h1>
+        <button class="btn btn-primary btn-icon" onclick="openCreatePost()" title="Create post">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+
+      <div class="tabs mb-12">
+        <div class="tab active" onclick="switchFeedTab('following', this)">Following</div>
+        <div class="tab" onclick="switchFeedTab('explore', this)">Explore</div>
+      </div>
+
+      <div id="feed-container">
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <p>Loading posts...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WORKOUT PAGE ── -->
+    <div id="page-workout" class="page">
+      <div class="page-header">
+        <h1>Workout</h1>
+      </div>
+
+      <!-- Timer Card -->
+      <div class="card card-accent mb-16" style="text-align:center;padding:24px 18px;">
+        <div class="text-small text-muted" style="text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;" id="timer-activity-label">Select activity to start</div>
+        <div class="timer-display" id="workout-timer">00:00:00</div>
+        <div class="timer-controls">
+          <button class="btn btn-primary" id="timer-btn" onclick="toggleTimer()">▶ Start</button>
+          <button class="btn btn-secondary" onclick="resetTimer()">↺ Reset</button>
+        </div>
+      </div>
+
+      <!-- Activity Type -->
+      <div class="section-header"><div class="section-title">Activity Type</div></div>
+      <div class="filter-chips mb-16" id="activity-type-chips">
+        <div class="chip active" onclick="selectActivity('running', this)">🏃 Running</div>
+        <div class="chip" onclick="selectActivity('gym', this)">🏋️ Gym</div>
+        <div class="chip" onclick="selectActivity('cycling', this)">🚴 Cycling</div>
+        <div class="chip" onclick="selectActivity('swimming', this)">🏊 Swimming</div>
+        <div class="chip" onclick="selectActivity('walking', this)">🚶 Walking</div>
+        <div class="chip" onclick="selectActivity('yoga', this)">🧘 Yoga</div>
+        <div class="chip" onclick="selectActivity('hiit', this)">⚡ HIIT</div>
+        <div class="chip" onclick="selectActivity('other', this)">➕ Other</div>
+      </div>
+
+      <!-- Manual Log Form -->
+      <div class="card mb-16">
+        <div class="section-title mb-12">Manual Log</div>
+        <div class="form-group">
+          <label class="form-label">Steps</label>
+          <input id="manual-steps" type="number" class="form-input" placeholder="e.g. 5000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Duration (minutes)</label>
+          <input id="manual-duration" type="number" class="form-input" placeholder="e.g. 30">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes (optional)</label>
+          <input id="manual-notes" type="text" class="form-input" placeholder="How did it feel?">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="saveManualActivity()">💾 Save Activity</button>
+      </div>
+
+      <!-- Recent Activities -->
+      <div class="section-header">
+        <div class="section-title">Recent Activities</div>
+      </div>
+      <div id="activity-list">
+        <div class="empty-state"><div class="empty-icon">🏃</div><p>No activities yet. Start moving!</p></div>
+      </div>
+    </div>
+
+    <!-- ── PLACES PAGE ── -->
+    <div id="page-places" class="page">
+      <div class="page-header">
+        <h1>Places</h1>
+        <button class="btn btn-primary btn-icon" onclick="openAddPlace()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+
+      <div class="filter-chips" id="place-filter-chips">
+        <div class="chip active" onclick="filterPlaces('all', this)">All</div>
+        <div class="chip" onclick="filterPlaces('gym', this)">🏋️ Gym</div>
+        <div class="chip" onclick="filterPlaces('park', this)">🌳 Park</div>
+        <div class="chip" onclick="filterPlaces('track', this)">🏃 Track</div>
+        <div class="chip" onclick="filterPlaces('beach', this)">🏖 Beach</div>
+        <div class="chip" onclick="filterPlaces('studio', this)">🧘 Studio</div>
+      </div>
+
+      <div id="places-list">
+        <div class="empty-state"><div class="empty-icon">📍</div><p>Loading places...</p></div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE PAGE ── -->
+    <div id="page-profile" class="page">
+      <div id="profile-content">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+  </div><!-- .app-container -->
+
+  <!-- Bottom Nav Bar -->
+  <nav class="nav-bar">
+    <div class="nav-item active" onclick="goPage('dashboard')" id="nav-dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      Home
+    </div>
+    <div class="nav-item" onclick="goPage('feed')" id="nav-feed">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      Feed
+    </div>
+    <div class="nav-item" onclick="goPage('workout')" id="nav-workout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+        <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/>
+        <line x1="14" y1="1" x2="14" y2="4"/>
+      </svg>
+      Workout
+    </div>
+    <div class="nav-item" onclick="goPage('places')" id="nav-places">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      Places
+    </div>
+    <div class="nav-item" onclick="goPage('profile')" id="nav-profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      Profile
+    </div>
+  </nav>
+
+</div><!-- #app-wrapper -->
+
+<!-- ════════════════════ MODALS ════════════════════ -->
+
+<!-- Create Post Modal -->
+<div class="modal-overlay" id="modal-create-post">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">New Post</div>
+    <div class="form-group">
+      <textarea id="post-content" class="form-input" placeholder="Share your progress, tips, or motivation..." rows="4"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Photo (optional)</label>
+      <input id="post-image" type="file" class="form-input" accept="image/*">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="submitPost()">📤 Post</button>
+    <button class="btn btn-ghost btn-full mt-8" onclick="closeModal('modal-create-post')">Cancel</button>
+  </div>
+</div>
+
+<!-- Comments Modal -->
+<div class="modal-overlay" id="modal-comments">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Comments</div>
+    <div id="comments-list" style="max-height:50vh;overflow-y:auto;margin-bottom:16px;"></div>
+    <div style="display:flex;gap:8px;">
+      <input id="comment-input" type="text" class="form-input" placeholder="Write a comment..." style="flex:1">
+      <button class="btn btn-primary" onclick="submitComment()">Send</button>
+    </div>
+    <button class="btn btn-ghost btn-full mt-8" onclick="closeModal('modal-comments')">Close</button>
+  </div>
+</div>
+
+<!-- Add Place Modal -->
+<div class="modal-overlay" id="modal-add-place">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add a Place</div>
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input id="place-name" type="text" class="form-input" placeholder="Central Park">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select id="place-type" class="form-input">
+        <option value="gym">🏋️ Gym</option>
+        <option value="park">🌳 Park</option>
+        <option value="track">🏃 Running Track</option>
+        <option value="beach">🏖 Beach</option>
+        <option value="studio">🧘 Studio</option>
+        <option value="other">📍 Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">City</label>
+      <input id="place-city" type="text" class="form-input" placeholder="Your city">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Address (optional)</label>
+      <input id="place-address" type="text" class="form-input" placeholder="Street address">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea id="place-desc" class="form-input" placeholder="What's great about this place?" rows="3"></textarea>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="submitPlace()">📍 Add Place</button>
+    <button class="btn btn-ghost btn-full mt-8" onclick="closeModal('modal-add-place')">Cancel</button>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal-overlay" id="modal-edit-profile">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Profile</div>
+    <div class="form-group">
+      <label class="form-label">Bio</label>
+      <textarea id="edit-bio" class="form-input" rows="3" placeholder="Tell your fitness story..."></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label class="form-label">Weight (kg)</label>
+        <input id="edit-weight" type="number" class="form-input" placeholder="70">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Height (cm)</label>
+        <input id="edit-height" type="number" class="form-input" placeholder="175">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">City</label>
+      <input id="edit-city" type="text" class="form-input" placeholder="Your city">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Goal</label>
+      <select id="edit-goal" class="form-input">
+        <option value="lose_weight">🔥 Lose Weight</option>
+        <option value="gain_muscle">💪 Gain Muscle</option>
+        <option value="maintain">⚖️ Maintain</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Profile Photo</label>
+      <input id="edit-avatar" type="file" class="form-input" accept="image/*">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveProfile()">💾 Save Changes</button>
+    <button class="btn btn-ghost btn-full mt-8" onclick="closeModal('modal-edit-profile')">Cancel</button>
+  </div>
+</div>
+
+<!-- Quick Log Modal -->
+<div class="modal-overlay" id="modal-quick-log">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="quick-log-title">Log Activity</div>
+    <div class="form-group">
+      <label class="form-label">Duration (minutes)</label>
+      <input id="quick-duration" type="number" class="form-input" placeholder="30">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Steps (optional)</label>
+      <input id="quick-steps" type="number" class="form-input" placeholder="3000">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveQuickLog()">✅ Log It</button>
+    <button class="btn btn-ghost btn-full mt-8" onclick="closeModal('modal-quick-log')">Cancel</button>
+  </div>
+</div>
+
+<!-- Progress Photos Modal -->
+<div class="modal-overlay" id="modal-progress">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Upload Progress Photo</div>
+    <div class="form-group">
+      <label class="form-label">Photo</label>
+      <input id="progress-photo-input" type="file" class="form-input" accept="image/*">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Caption (optional)</label>
+      <input id="progress-caption" type="text" class="form-input" placeholder="Week 4 check-in">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Current Weight (kg)</label>
+      <input id="progress-weight" type="number" class="form-input" placeholder="70.5">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="uploadProgressPhoto()">📸 Upload</button>
+    <button class="btn btn-ghost btn-full mt-8" onclick="closeModal('modal-progress')">Cancel</button>
+  </div>
+</div>
+
+<!-- Discover Partners Modal -->
+<div class="modal-overlay" id="modal-partners">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Find Training Partners</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">City</label>
+        <input id="partner-city" type="text" class="form-input" placeholder="City name">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Goal</label>
+        <select id="partner-goal" class="form-input">
+          <option value="">Any goal</option>
+          <option value="lose_weight">Lose Weight</option>
+          <option value="gain_muscle">Gain Muscle</option>
+          <option value="maintain">Maintain</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-secondary btn-full mb-12" onclick="searchPartners()">🔍 Search</button>
+    <div id="partners-list"></div>
+    <button class="btn btn-ghost btn-full mt-8" onclick="closeModal('modal-partners')">Close</button>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Install Banner -->
+<div id="install-banner" class="hidden">
+  <div style="font-size:24px;">📱</div>
+  <div class="install-text">
+    <strong>Install FitApp</strong><br>
+    <span style="font-size:11px;color:var(--text-secondary)">Get the full app experience</span>
+  </div>
+  <button class="btn btn-primary" style="padding:8px 14px;font-size:13px;" onclick="installApp()">Install</button>
+  <button class="btn btn-ghost btn-icon" onclick="dismissInstall()">✕</button>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
